@@ -1,0 +1,464 @@
+<!Doctype html>
+
+
+<html>
+
+    
+<!------------------------------------------->        
+<!-----  BEGIN BOOSTRAP INITIALIZATION  ----->  
+<!------------------------------------------->  
+    
+    
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    
+    
+<!------------------------------>        
+<!-----  BEGIN JAVASCRIPT  ----->  
+<!------------------------------>  
+    
+    
+    <script src="web3.js/dist/web3.min.js"></script>
+    <script type="text/javascript">
+        
+        
+        
+        /*
+        ---------------------
+        |    Web 3 Stuff    |
+        ---------------------
+        */
+        
+         var contract_address = "0x29a9c0904f2e41ac87a0cc651df0efd4303051bc";
+        var contract_abi = [ { "constant": false, "inputs": [ { "name": "to", "type": "address" }, { "name": "amount", "type": "uint256" } ], "name": "sendTokens", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_address", "type": "address" } ], "name": "checkBalance", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "getCentralBankBalance", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "amount", "type": "uint256" } ], "name": "requestFromMint", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "name": "circulatingSupply", "type": "uint256" } ], "payable": false, "stateMutability": "nonpayable", "type": "constructor" } ];
+        
+        var contract_instance = web3.eth.contract(contract_abi).at(contract_address);
+   
+        
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+            web3.eth.defaultAccount = web3.eth.accounts[0];
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            web3.eth.defaultAccount = web3.eth.accounts[0];
+            console.log(web3.eth.accounts[0]);
+        }
+
+        // Syntax -> 
+        //    set: contract_instance.function( [PARAM?], function(err, res) { [DO STUFF] });
+        //    web3.eth.getBalance(web3.eth.defaultAccount, function(err, result) { [DO STUFF]});
+        //    contract_instance.function( [PARAM?], function(err, res) { [DO STUFF] });
+        
+        function getMyBalance() {
+            let element = document.getElementById("id-getBalance-textarea").value
+            contract_instance.checkBalance(element, function(err, result) {
+                console.log("Query Recieved . . .");
+                console.log("Account #: " + element);
+                console.log("Balance: " + result.toNumber());
+                document.getElementById("id-getBalance-result").innerHTML = result.toNumber();
+            });
+        }
+        
+        function loanFromCentralBank() {
+            let tokens = document.getElementById("myRange").value;
+            console.log("It appears that you are requesting " +tokens + " tokens");
+            contract_instance.requestFromMint(tokens, function(err, result) {
+                console.log(result);
+            });
+        }
+        
+        function transferFunds() {
+            let toAddress = document.getElementById("transfer-to-address-textarea").value;
+            contract_instance.sendTokens()
+            
+        }
+        
+        /*
+        -------------------
+        |    UI  Stuff    |
+        -------------------
+        */
+        
+        var progress = 50;
+        
+        function incr() {
+            if (progress < 100) {
+                progress+=10;
+                updateProgressBar();
+            }
+        }
+        
+        function decr() {
+            if (progress > 0) {
+                progress-=10;
+                updateProgressBar();
+            }
+        }
+        
+        function updateProgressBar() {
+            let progressString = ""+ progress-10 +"%";
+            
+            $('.progress-bar').css('width', progress+'%').attr('aria-valuenow', progress);
+            $('.progress-bar').text(progress+"% Complete");
+            console.log("Should be updating...");
+            console.log("progress value is now" + progress +"%");
+        }
+        
+    </script>
+    
+<!----------------------->        
+<!-----  BEGIN CSS  ----->  
+<!----------------------->     
+    
+    
+    <style>
+        
+        html {
+            z-index: -1;
+            position: relative;
+        }
+       
+        #pBar {
+            margin: 10px 20px;
+        }
+        
+        .container .row .col-sm-6 {
+            height: 10px;
+        }
+        
+        .underline {
+            border-bottom: 2px solid currentColor;
+        }
+        
+        .jumbotron {
+            min-height: 250px;
+            
+            /*  BEGIN Custom Gradient  */
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#c6ffc8+1,e2ffe3+14,ffffff+21,ffd6d6+35,ffd6d6+47,ffeaea+59,fff4f4+69,eef7ed+80,b8edc2+100 */
+            background: #c6ffc8; /* Old browsers */
+            background: -moz-linear-gradient(top, #c6ffc8 1%, #e2ffe3 14%, #ffffff 21%, #ffd6d6 35%, #ffd6d6 47%, #ffeaea 59%, #fff4f4 69%, #eef7ed 80%, #b8edc2 100%); /* FF3.6-15 */
+            background: -webkit-linear-gradient(top, #c6ffc8 1%,#e2ffe3 14%,#ffffff 21%,#ffd6d6 35%,#ffd6d6 47%,#ffeaea 59%,#fff4f4 69%,#eef7ed 80%,#b8edc2 100%); /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom, #c6ffc8 1%,#e2ffe3 14%,#ffffff 21%,#ffd6d6 35%,#ffd6d6 47%,#ffeaea 59%,#fff4f4 69%,#eef7ed 80%,#b8edc2 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c6ffc8', endColorstr='#b8edc2',GradientType=0 ); /* IE6-9 */
+            /*  END Custom Gradient  */
+            
+            display: flex;
+            justify-content: center; /* align horizontal */
+            align-items: center; /* align vertical */
+            
+        }   
+        
+        .navbar-brand {
+          padding: 0px;
+        }
+        
+        .navbar-brand>img {
+          height: 100%;
+          padding: 15px;
+          width: auto;
+        }
+        
+        
+        /* Slider */
+        
+        .slidecontainer {
+            width: 90%;
+            margin-left: 5%;
+            margin-right: 5%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 25px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+            border-radius: 15px;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 35px;
+            height: 35px;
+            background: #4CAF50;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+    </style>
+
+    
+<!----------------------->        
+<!-----  BEGIN HTML ----->  
+<!----------------------->  
+  
+    
+    <body>
+
+        <!------------------>        
+        <!-----  MENU  ----->  
+        <!------------------>  
+
+<div class="container" style="width: 100%">
+  <nav class="navbar navbar-inverse navbar-fixed-top" style="width: 100%; margin-top: 10px;">
+    <div class="container-fluid" style="width: 100%">
+        <!-- Header -->
+      <div class="navbar-header">   
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><img src="img/code-icon-lg.png">
+      </a>
+       <!-- Body -->   
+      </div>
+      <div id="navbar1" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+    <!--/.container-fluid -->
+  </nav>
+</div>
+        
+        <!--------------------->        
+        <!-----  WELCOME  ----->  
+        <!--------------------->  
+        
+        <div class="jumbotron text-center" style="height: 200px">
+            <h1 style="">Welcome</h1>
+        </div>
+        
+        <!---------------------------------------------->        
+        <!-----  3-WAY SPLIT(WHO, MISSION, ABOUT)  ----->  
+        <!---------------------------------------------->  
+        
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-4">
+              <h3>Who We are</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+              <img src="img/code-icon-lg.png" style="width: 150px; height = 150px; display: block; margin-left: auto; margin-right: auto;">
+            </div>
+            <div class="col-sm-4">
+              <h3>Our Mission</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+              <img src="img/code-icon-lg.png" style="width: 150px; height = 150px; display: block; margin-left: auto; margin-right: auto;">
+            </div>
+            <div class="col-sm-4">
+              <h3>About Us</h3>        
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+              <img src="img/code-icon-lg.png" style="width: 150px; height = 150px; display: block; margin-left: auto; margin-right: auto;">
+            </div>
+          </div>
+        </div>
+
+
+        <!---------------------------------------------->        
+        <!-----  ICO PROGRESS MEASUREMENT SECTION  ----->  
+        <!---------------------------------------------->  
+        
+        <div class="page-header" style="margin-left: 20px;"> <h1>ICO Progress Measurement </h1></div>         
+
+        <div class="progress" id="pBar">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="50"
+          aria-valuemin="0" aria-valuemax="100" style="width:50%" id="mySucessBar" height="40px">
+            50% Complete
+          </div>
+        </div>
+
+        <div class="container" id="progress-control-container">
+             <div class="row">
+                 
+                 <div class="col-sm-6" style="margin: 30px 0px;">
+                    <button class="btn btn-danger btn-block" onclick="decr()" >Decrement</button>
+                 </div>
+                 
+                <div class="col-sm-6" style="margin: 30px 0px;">
+                    <button class="btn btn-success btn-block" onclick="incr()">Increment</button>
+                 </div>
+              </div>   
+
+              <br><br>
+            
+              <hr style="margin: 5px -95px;">  
+
+        </div>
+     
+        
+        
+    <!---------------------------------------->        
+    <!-----  PAYMENT OPERATIONS SECTION  ----->  
+    <!---------------------------------------->  
+        
+        
+        
+        <!--------------------->        
+        <!-----  WELCOME  ----->  
+        <!--------------------->  
+        
+    <div class="jumbotron text-center">
+        <h1>Payment Operations</h1>
+    </div>    
+    
+        <!------------------------------>        
+        <!-----  SUPPLEMENTAL CSS  ----->  
+        <!------------------------------>  
+        
+      <!-- Inline CSS based on choices in "Settings" tab -->
+      <style>.bootstrap-iso .formden_header h2, .bootstrap-iso .formden_header p, .bootstrap-iso form{font-family: Arial, Helvetica, sans-serif; color: black}.bootstrap-iso form button, .bootstrap-iso form button:hover{color: #ffffff !important;}.bootstrap-iso .form-control:focus { border-color: #5ec553;  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(94, 197, 83, 0.6); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(94, 197, 83, 0.6);} .asteriskField{color: red;}.bootstrap-iso form .input-group-addon {color:#742a2a; background-color: #b85d5d; border-radius: 4px; padding-left:12px}</style>
+  
+  
+        <!--------------------------->        
+        <!-----  CHECK BALANCE  ----->  
+        <!--------------------------->  
+        
+    <div class="page-header" style="margin-left: 10px;"> <h1> Check Balance </h1></div>  
+        
+      <div class="container">
+        <div class="row">
+        <div class="col-sm-8">
+           <div class="form-group">
+            <label for="acct">Account</label>
+            <input type="text" class="form-control" id="id-getBalance-textarea" style="width: calc(100%);">
+           </div>
+
+            <button class="btn-success btn-block" onclick="getMyBalance()" style="border-radius: 5px; width: calc(100%);">Check Balance</button>  
+        </div>
+        <div class="col-sm-4">
+           <div class="form-group">
+
+            <h4 style="text-decoration:underline">Balance: </h4>
+            <h2 class="well well-sm" id="id-getBalance-result" style="width: calc(80%); float: left; margin-top: 0px; text-align: right;">00000000</h2>
+               <h3 style="width: calc(15%); float: right; margin-top: 10px;">Tokens</h3>
+            </div> 
+        </div>    
+        </div>
+      </div>    
+
+        <!---------------------------->        
+        <!-----  TRANSFER FUNDS  ----->  
+        <!---------------------------->  
+        
+      <div class="page-header" style="margin-left: 10px;"> <h1> Transfer Funds </h1></div>
+       
+        
+        <div class="bootstrap-iso"> <!-- This just specifies the custom BS properties that we are looking to incorporate   -->
+        
+        <div class="form-group" style="margin: 20px;">
+            <label for="to-addr">To</label>
+            <span class="asteriskField">*</span>
+            <input type="text" class="form-control" id="transfer-to-address-textarea" style="width: calc(100%);">
+       </div>
+        
+        <div class="slidecontainer" style="float: left;">
+          <input type="range" min="1" max="1000" value="20" class="slider" id="myRange2">
+          <h2 id="sliderVal2" style="float: right;"></h2>
+        </div>    
+            
+       <button class="btn-success btn-block" onclick="transferFunds()" style="border-radius: 5px; width: 97%; margin-left: 1.5%; margin-right: 1.5%">Transfer</button> 
+        
+        
+        </div>
+        
+        <br>
+        <br>
+        
+        <!-------------------->        
+        <!-----  FAUCET  ----->  
+        <!-------------------->  
+           
+        <div class="page-header" style="margin-left: 10px;"> <h1> Faucet </h1></div>
+        
+        <div class="form-group" style="margin: 20px;">
+            <label for="fauc-addr">Your Address: </label>
+            <span class="asteriskField">*</span>
+            <input type="text" class="form-control" id="faucetAddress" style="width: calc(100%);">
+       </div>
+        <label for="slider" style="margin-left: 20px; margin-bottom: 10px;">Amount: </label>
+        <div class="slidecontainer" style="float: left;">
+          <input type="range" min="1" max="1000" value="20" class="slider" id="myRange">
+          <h2 id="sliderVal" style="float: right;"></h2>
+        </div>
+
+        <script>
+            
+        var transferSlider = document.getElementById("myRange2");
+        var transferSliderOutput = document.getElementById("sliderVal2");
+        contract_instance.checkBalance(web3.eth.accounts[0], function(err, res) {
+                console.log("Query Update:");
+                console.log("Account: " + web3.eth.accounts[0]);
+                console.log("Balance: " + res.toNumber());
+                let balance = res.toNumber();
+                transferSlider.max = balance;
+                updateTransferSlider(balance);
+                
+            });
+        transferSliderOutput.innerHTML = transferSlider.value + " Tokens";    
+        
+         function updateTransferSlider(to) {
+            transferSliderOutput.innerHTML = transferSlider.value + " Tokens";
+        }   
+        
+        transferSlider.onmouseup = function() {
+            contract_instance.checkBalance(web3.eth.accounts[0], function(err, res) {
+                console.log("Query Update:");
+                console.log("Account: " + web3.eth.accounts[0]);
+                console.log("Balance: " + res.toNumber());
+                let balance = res.toNumber();
+                transferSlider.max = balance;
+                updateTransferSlider(balance);
+                
+            });
+        }    
+            
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("sliderVal");
+        output.innerHTML = slider.value + " Tokens"; 
+        
+        slider.oninput = function() {
+          output.innerHTML = this.value + " Tokens";
+        }
+        
+        </script>
+        
+        
+        <button class="btn-success btn-block" onclick="loanFromCentralBank()" style="border-radius: 5px; width: 97%; margin-left: 1.5%; margin-right: 1.5%">Receive</button> 
+        
+        
+        
+    </body>
+    
+    <br><br><br>
+</html>
+
